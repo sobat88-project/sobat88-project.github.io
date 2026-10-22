@@ -1,1 +1,207 @@
-openclaw.html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>OpenClaw AI</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:var(--tg-theme-bg-color,#0c1b22);
+  --card:var(--tg-theme-secondary-bg-color,#13262f);
+  --tx:var(--tg-theme-text-color,#eaf4f1);
+  --hint:var(--tg-theme-hint-color,#8aa5a8);
+  --ac:#ffb547;
+  --acx:#2a1b00;
+  --line:color-mix(in srgb,var(--tx) 14%,transparent);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){
+  :root{
+    --bg:var(--tg-theme-bg-color,#f4f7f5);
+    --card:var(--tg-theme-secondary-bg-color,#ffffff);
+    --tx:var(--tg-theme-text-color,#10252b);
+    --hint:var(--tg-theme-hint-color,#5d7478);
+    color-scheme:light;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{
+  background:var(--bg);color:var(--tx);
+  font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(84px + env(safe-area-inset-bottom,0px));
+  max-width:560px;margin:0 auto;
+}
+h1{font-size:25px;line-height:1.2;margin:22px 0 10px;letter-spacing:-.01em}
+h2{font-size:19px;margin:6px 0 14px}
+p{margin:0 0 12px;color:var(--hint)}
+.tab{display:none}.tab.on{display:block}
+
+.chat{background:var(--card);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.b{max-width:86%;padding:9px 13px;font-size:15px;border-radius:18px}
+.u{align-self:flex-end;background:var(--ac);color:var(--acx);border-bottom-right-radius:5px}
+.a{align-self:flex-start;background:color-mix(in srgb,var(--tx) 9%,transparent);border-bottom-left-radius:5px;min-height:40px}
+
+.btn{display:block;width:100%;border:0;border-radius:12px;padding:14px;font:600 16px inherit;font-family:inherit;background:var(--ac);color:var(--acx);cursor:pointer}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;color:var(--tx);border:1px solid var(--line)}
+
+.fitur{list-style:none;margin:22px 0;padding:0}
+.fitur li{display:flex;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.fitur li:last-child{border-bottom:0}
+.fitur span{font-size:24px;width:32px;text-align:center}
+
+.svc{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px}
+.svc h3{margin:0 0 4px;font-size:17px}
+.svc p{margin:0 0 12px;font-size:14px}
+.svc .row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.svc .hrg{font-weight:600;font-size:14px}
+.svc button{border:0;border-radius:999px;padding:9px 18px;font:600 14px inherit;font-family:inherit;background:var(--ac);color:var(--acx);cursor:pointer}
+
+label{display:block;font-size:14px;color:var(--hint);margin:16px 0 6px}
+input,select,textarea{
+  width:100%;font:16px inherit;font-family:inherit;color:var(--tx);
+  background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px
+}
+textarea{min-height:130px;resize:vertical}
+input:focus,select:focus,textarea:focus,.btn:focus-visible,.svc button:focus-visible,nav button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.cnt{font-size:13px;color:var(--hint);text-align:right;margin:4px 0 16px}
+.err{color:#ff8a7a;font-size:14px;min-height:22px;margin:0 0 8px}
+
+nav{
+  position:fixed;left:0;right:0;bottom:0;display:flex;
+  background:var(--card);border-top:1px solid var(--line);
+  padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));
+}
+nav button{
+  flex:1;border:0;background:transparent;color:var(--hint);
+  font:500 12px inherit;font-family:inherit;padding:6px 0;border-radius:10px;cursor:pointer
+}
+nav button span{display:block;font-size:21px;line-height:1.2}
+nav button.on{color:var(--tx);font-weight:700}
+nav button.on span{filter:none}
+@media (prefers-reduced-motion:reduce){.btn:active{transform:none}}
+</style>
+</head>
+<body>
+
+<section class="tab on" id="home">
+  <div class="chat" aria-label="Contoh percakapan">
+    <div class="b u">Harga emas hari ini?</div>
+    <div class="b a" id="ans"></div>
+  </div>
+  <h1>Asisten AI yang bisa kamu ajak ngobrol, bukan cuma diberi perintah</h1>
+  <p>OpenClaw membaca foto soal, menjawab lewat suara, dan mengecek kabar terbaru sebelum menjawab.</p>
+  <ul class="fitur">
+    <li><span>📸</span>Kerjakan soal dari foto</li>
+    <li><span>🎤</span>Ngobrol lewat voice note</li>
+    <li><span>🎨</span>Buat gambar dari teks</li>
+    <li><span>🔎</span>Berita, saham, kripto, dan emas terkini</li>
+  </ul>
+  <button class="btn" onclick="go('pesan')">Pesan bot buatan Sobat88</button>
+</section>
+
+<section class="tab" id="layanan">
+  <h2>Pilih layanan</h2>
+  <div id="daftar"></div>
+</section>
+
+<section class="tab" id="pesan">
+  <h2>Pesan bot</h2>
+  <label for="f-layanan">Layanan</label>
+  <select id="f-layanan"></select>
+  <label for="f-nama">Nama kamu</label>
+  <input id="f-nama" autocomplete="name" maxlength="60">
+  <label for="f-detail">Bot seperti apa yang kamu mau?</label>
+  <textarea id="f-detail" maxlength="800" placeholder="Contoh: bot toko baju dengan katalog, pembayaran, dan notifikasi order ke admin"></textarea>
+  <div class="cnt"><span id="hit">0</span>/800</div>
+  <p class="err" id="err" role="alert"></p>
+  <button class="btn" onclick="kirim()">Kirim pesanan</button>
+</section>
+
+<section class="tab" id="tentang">
+  <h2>Tentang OpenClaw</h2>
+  <p>OpenClaw AI dibuat oleh Sobat88 (Ayid), developer Indonesia yang membangun bot Telegram langsung dari HP.</p>
+  <p>Pesanan dari halaman ini masuk ke bot dan langsung diteruskan ke admin. Status pesanan bisa dicek dengan perintah /cekorder.</p>
+  <button class="btn ghost" onclick="buka('https://sobat88-project.github.io')">Lihat portofolio</button>
+</section>
+
+<nav>
+  <button class="on" data-t="home" onclick="go('home')"><span>🏠</span>Beranda</button>
+  <button data-t="layanan" onclick="go('layanan')"><span>🧩</span>Layanan</button>
+  <button data-t="pesan" onclick="go('pesan')"><span>📝</span>Pesan</button>
+  <button data-t="tentang" onclick="go('tentang')"><span>ℹ️</span>Tentang</button>
+</nav>
+
+<script>
+var tg = window.Telegram && window.Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+
+/* Ubah daftar ini sesuai layananmu. Isi harga kalau sudah ditentukan. */
+var LAYANAN = [
+  {ikon:"🤖", nama:"Bot Telegram", desc:"Bot custom dengan menu, balasan otomatis, dan panel admin.", harga:"Hubungi admin"},
+  {ikon:"🌐", nama:"Bot Multi-Platform", desc:"Satu bot yang terhubung ke beberapa platform.", harga:"Hubungi admin"},
+  {ikon:"🧠", nama:"Bot AI Pintar", desc:"Chat AI, baca gambar, suara, dan info terkini.", harga:"Hubungi admin"},
+  {ikon:"🛒", nama:"Bot Toko dan Promo", desc:"Katalog produk, promo otomatis, dan pesanan.", harga:"Hubungi admin"}
+];
+
+var daftar = document.getElementById("daftar");
+var sel = document.getElementById("f-layanan");
+LAYANAN.forEach(function (l, i) {
+  var d = document.createElement("div");
+  d.className = "svc";
+  d.innerHTML = "<h3>" + l.ikon + " " + l.nama + "</h3><p>" + l.desc +
+    "</p><div class='row'><span class='hrg'>" + l.harga +
+    "</span><button onclick='pilih(" + i + ")'>Pilih</button></div>";
+  daftar.appendChild(d);
+  var o = document.createElement("option");
+  o.value = l.nama; o.textContent = l.nama;
+  sel.appendChild(o);
+});
+
+function go(id) {
+  document.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("on", t.id === id); });
+  document.querySelectorAll("nav button").forEach(function (b) { b.classList.toggle("on", b.dataset.t === id); });
+  window.scrollTo(0, 0);
+  if (tg && tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+}
+function pilih(i) { sel.selectedIndex = i; go("pesan"); }
+function buka(u) { if (tg) tg.openLink(u); else window.open(u, "_blank"); }
+
+var nama = document.getElementById("f-nama");
+if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+  nama.value = tg.initDataUnsafe.user.first_name || "";
+}
+var detail = document.getElementById("f-detail");
+var hit = document.getElementById("hit");
+detail.addEventListener("input", function () { hit.textContent = detail.value.length; });
+
+function kirim() {
+  var err = document.getElementById("err");
+  var d = {layanan: sel.value, nama: nama.value.trim(), detail: detail.value.trim()};
+  if (!d.nama) { err.textContent = "Isi nama kamu dulu."; return; }
+  if (d.detail.length < 10) { err.textContent = "Ceritakan bot yang kamu mau, minimal 10 huruf."; return; }
+  if (!tg || !tg.initData) {
+    err.textContent = "Buka halaman ini lewat tombol di bot Telegram supaya pesanan bisa terkirim.";
+    return;
+  }
+  err.textContent = "";
+  if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+  tg.sendData(JSON.stringify(d));
+}
+
+var kalimat = "Aku cek sumber terbarunya dulu, lalu kujawab lengkap dengan waktunya.";
+var ans = document.getElementById("ans");
+if (window.matchMedia("(prefers-reduced-motion:reduce)").matches) {
+  ans.textContent = kalimat;
+} else {
+  var n = 0;
+  setTimeout(function t() {
+    ans.textContent = kalimat.slice(0, ++n);
+    if (n < kalimat.length) setTimeout(t, 28);
+  }, 500);
+}
+</script>
+</body>
+</html>
