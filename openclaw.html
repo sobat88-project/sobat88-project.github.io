@@ -182,7 +182,7 @@ function kirim() {
   var d = {layanan: sel.value, nama: nama.value.trim(), detail: detail.value.trim()};
   if (!d.nama) { err.textContent = "Isi nama kamu dulu."; return; }
   if (d.detail.length < 10) { err.textContent = "Ceritakan bot yang kamu mau, minimal 10 huruf."; return; }
-  if (!tg || !tg.initData) {
+  if (!tg || !tg.platform || tg.platform === "unknown") {
     err.textContent = "Buka halaman ini lewat tombol di bot Telegram supaya pesanan bisa terkirim.";
     return;
   }
