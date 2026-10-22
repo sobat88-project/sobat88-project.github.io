@@ -51,6 +51,10 @@ p{margin:0 0 12px;color:var(--hint)}
 .fitur li{display:flex;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
 .fitur li:last-child{border-bottom:0}
 .fitur span{font-size:24px;width:32px;text-align:center}
+.fitur li{cursor:pointer}
+.fitur li::after{content:"›";margin-left:auto;font-size:24px;color:var(--hint)}
+.isi{margin:0 0 12px;padding-left:18px;font-size:14px;color:var(--hint)}
+.isi li{margin:2px 0}
 
 .svc{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px}
 .svc h3{margin:0 0 4px;font-size:17px}
@@ -94,10 +98,10 @@ nav button.on span{filter:none}
   <h1>Asisten AI yang bisa kamu ajak ngobrol, bukan cuma diberi perintah</h1>
   <p>OpenClaw membaca foto soal, menjawab lewat suara, dan mengecek kabar terbaru sebelum menjawab.</p>
   <ul class="fitur">
-    <li><span>📸</span>Kerjakan soal dari foto</li>
-    <li><span>🎤</span>Ngobrol lewat voice note</li>
-    <li><span>🎨</span>Buat gambar dari teks</li>
-    <li><span>🔎</span>Berita, saham, kripto, dan emas terkini</li>
+    <li role="button" tabindex="0" onclick="fitur('soal')"><span>📸</span>Kerjakan soal dari foto</li>
+    <li role="button" tabindex="0" onclick="fitur('suara')"><span>🎤</span>Ngobrol lewat voice note</li>
+    <li role="button" tabindex="0" onclick="fitur('gambar')"><span>🎨</span>Buat gambar dari teks</li>
+    <li role="button" tabindex="0" onclick="fitur('berita')"><span>🔎</span>Berita, saham, kripto, dan emas terkini</li>
   </ul>
   <button class="btn" onclick="go('pesan')">Pesan bot buatan Sobat88</button>
 </section>
@@ -140,10 +144,14 @@ if (tg) { tg.ready(); tg.expand(); }
 
 /* Ubah daftar ini sesuai layananmu. Isi harga kalau sudah ditentukan. */
 var LAYANAN = [
-  {ikon:"🤖", nama:"Bot Telegram", desc:"Bot custom dengan menu, balasan otomatis, dan panel admin.", harga:"Hubungi admin"},
-  {ikon:"🌐", nama:"Bot Multi-Platform", desc:"Satu bot yang terhubung ke beberapa platform.", harga:"Hubungi admin"},
-  {ikon:"🧠", nama:"Bot AI Pintar", desc:"Chat AI, baca gambar, suara, dan info terkini.", harga:"Hubungi admin"},
-  {ikon:"🛒", nama:"Bot Toko dan Promo", desc:"Katalog produk, promo otomatis, dan pesanan.", harga:"Hubungi admin"}
+  {ikon:"🤖", nama:"Bot Telegram", desc:"Bot custom untuk usaha atau komunitasmu.", harga:"Hubungi admin",
+   isi:["Balasan otomatis dan menu bertingkat", "Panel admin", "Database pesanan", "Notifikasi dan siaran pesan"]},
+  {ikon:"🌐", nama:"Bot Multi-Platform", desc:"Satu bot yang terhubung ke beberapa platform.", harga:"Hubungi admin",
+   isi:["Terhubung ke beberapa platform sesuai kebutuhan", "Panel admin", "Database pesanan", "Laporan harian"]},
+  {ikon:"🧠", nama:"Bot AI Pintar", desc:"Asisten AI untuk pelanggan atau pribadi.", harga:"Hubungi admin",
+   isi:["Chat AI dengan memori", "Baca foto soal", "Suara dua arah", "Berita dan harga terkini"]},
+  {ikon:"🛒", nama:"Bot Toko dan Promo", desc:"Bot jualan dengan katalog dan promo.", harga:"Hubungi admin",
+   isi:["Katalog produk", "Pesanan otomatis", "Promo terjadwal", "Notifikasi order ke admin"]}
 ];
 
 var daftar = document.getElementById("daftar");
@@ -152,7 +160,8 @@ LAYANAN.forEach(function (l, i) {
   var d = document.createElement("div");
   d.className = "svc";
   d.innerHTML = "<h3>" + l.ikon + " " + l.nama + "</h3><p>" + l.desc +
-    "</p><div class='row'><span class='hrg'>" + l.harga +
+    "</p><ul class='isi'>" + l.isi.map(function (x) { return "<li>" + x + "</li>"; }).join("") +
+    "</ul><div class='row'><span class='hrg'>" + l.harga +
     "</span><button onclick='pilih(" + i + ")'>Pilih</button></div>";
   daftar.appendChild(d);
   var o = document.createElement("option");
@@ -168,6 +177,10 @@ function go(id) {
 }
 function pilih(i) { sel.selectedIndex = i; go("pesan"); }
 function buka(u) { if (tg) tg.openLink(u); else window.open(u, "_blank"); }
+function fitur(k) {
+  var u = "https://t.me/ayidclow_bot?start=" + k;
+  if (tg && tg.openTelegramLink) tg.openTelegramLink(u); else window.open(u, "_blank");
+}
 
 var nama = document.getElementById("f-nama");
 if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -183,12 +196,16 @@ function kirim() {
   if (!d.nama) { err.textContent = "Isi nama kamu dulu."; return; }
   if (d.detail.length < 10) { err.textContent = "Ceritakan bot yang kamu mau, minimal 10 huruf."; return; }
   if (!tg || !tg.platform || tg.platform === "unknown") {
-    err.textContent = "Buka halaman ini lewat tombol di bot Telegram supaya pesanan bisa terkirim.";
+    err.textContent = "Buka halaman ini lewat tombol 🚀 di bot Telegram (ketik /app) supaya pesanan bisa terkirim.";
     return;
   }
   err.textContent = "";
   if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
-  tg.sendData(JSON.stringify(d));
+  try {
+    tg.sendData(JSON.stringify(d));
+  } catch (e) {
+    err.textContent = "Gagal mengirim. Buka lewat /app, lalu tekan tombol 🚀 di bagian bawah chat.";
+  }
 }
 
 var kalimat = "Aku cek sumber terbarunya dulu, lalu kujawab lengkap dengan waktunya.";
